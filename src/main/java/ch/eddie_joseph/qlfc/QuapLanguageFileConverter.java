@@ -1,35 +1,32 @@
 package ch.eddie_joseph.qlfc;
 
-import ch.eddie_joseph.qlfc.model.Questionary;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 
 public class QuapLanguageFileConverter {
 
-    public static void main(String [] args) throws Exception{
-        System.out.println("Starting JSON conversion");
+    private static final Logger logger = LogManager.getLogger(QuapLanguageFileConverter.class);
+
+    public static void main(String[] args) throws Exception {
+
+        logger.info("startign conversion");
+
         InputProvider input = new InputProvider();
 
-//        String [] line = input.getAspectConfig().readNext();
-//        for(String s : line) {
-//            System.out.println(s);
-//        }
-
-        QuestionaryBuilder builder = new QuestionaryBuilder("Questionnaire::Group::Default",input.getAspectConfig(),input.getGerman(),input.getFrench(),input.getItalian());
+        QuestionaryBuilder builder = new QuestionaryBuilder("Questionnaire::Group::Default", input.getAspectConfig(), input.getAspects(Language.DE), input.getAspects(Language.FR), input.getAspects(Language.IT)
+                , input.getQuestions(Language.DE), input.getQuestions(Language.FR), input.getQuestions(Language.IT)
+        );
         ObjectMapper objectMapper = new ObjectMapper();
-        //System.out.println(objectMapper.writeValueAsString(builder.build()));
         FileOutputStream fileOutputStream = new FileOutputStream("config.json");
         OutputStreamWriter writer = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
-        objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer,builder.build());
+        objectMapper.writerWithDefaultPrettyPrinter().writeValue(writer, builder.build());
         writer.close();
-
-        System.out.println("Converted Successfully");
-
+        logger.info("finished conversion");
     }
 
 }
